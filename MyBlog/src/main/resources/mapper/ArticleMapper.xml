@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ljw.blog.mapper.ArticleMapper">
+
+<!--Note:resultType或resultMap必须写！-->
+  
+  <!--jdbcType 一般用于数据插入的时候,防止为null无法判断类型导致的错误-->
+    <!--如果有返回值,需要加resultType-->
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultType="com.ljw.blog.entity.Article">
+        select *
+        from article
+        where article_id = #{articleId}
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+      delete from article
+      where article_id = #{articleId}
+    </delete>
+
+    <insert id="insert" parameterType="com.ljw.blog.entity.Article">
+        insert into article(article_id, article_user_id, article_title,
+                        article_view_count, article_comment_count,
+                        article_like_count, article_is_comment, article_status,
+                        article_order, article_update_time, article_create_time,
+                        article_summary, article_thumbnail, article_content
+                        )
+        values(#{articleId},#{articleUserId},#{articleTitle},
+           #{articleViewCount}, #{articleCommentCount},
+           #{articleLikeCount}, #{articleIsComment}, #{articleStatus},
+           #{articleOrder}, #{articleUpdateTime}, #{articleCreateTime},
+           #{articleSummary}, #{articleThumbnail}, #{articleContent}
+           )
+    </insert>
+    
+    <!--待解决-->
+    <update id="updateByPrimaryKey" parameterType="com.ljw.blog.entity.Article">
+        update article a
+        <set>
+            <if test="articleUserId!=null">
+                article_user_id = #{articleUserId},
+            </if>
+            <if test="articleTitle!=null">
+                article_title = #{articleTitle},
+            </if>
+            <if test="articleViewCount != null">
+                article_view_count = #{articleViewCount,jdbcType=INTEGER},
+            </if>
+            <if test="articleCommentCount != null">
+                article_comment_count = #{articleCommentCount,jdbcType=INTEGER},
+            </if>
+            <if test="articleLikeCount != null">
+                article_like_count = #{articleLikeCount,jdbcType=INTEGER},
+            </if>
+            <if test="articleCreateTime != null">
+                article_create_time = #{articleCreateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="articleUpdateTime != null">
+                article_update_time = #{articleUpdateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="articleIsComment != null">
+                article_is_comment = #{articleIsComment,jdbcType=INTEGER},
+            </if>
+            <if test="articleStatus != null">
+                article_status = #{articleStatus,jdbcType=INTEGER},
+            </if>
+            <if test="articleOrder != null">
+                article_order = #{articleOrder,jdbcType=INTEGER},
+            </if>
+            <if test="articleContent != null">
+                article_content = #{articleContent,jdbcType=LONGVARCHAR},
+            </if>
+            <if test="articleSummary != null">
+                article_summary = #{articleSummary,jdbcType=VARCHAR},
+            </if>
+            <if test="articleThumbnail != null">
+                article_thumbnail = #{articleThumbnail,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where article_id = #{articleId}
+    </update>
+    
+    <!--如果返回集合必须指定集合元素的类型,否则可以省略?不可以省略-->
+    <select id="selectAll" resultType="com.ljw.blog.entity.Article">
+        select *
+        from article
+    </select>
+    
+    <resultMap id="articleWithUserWithCategory" type="com.ljw.blog.entity.Article">
+        <id property="articleId" column="article_id" />
+        <result property="articleUserId" column="article_user_id" />
+        <result property="articleTitle" column="article_title" />
+        <result property="articleContent" column="article_content" />
+        <result property="articleViewCount" column="article_view_count" />
+        <result property="articleCommentCount" column="article_comment_count" />
+        <result property="articleLikeCount" column="article_like_count" />
+        <result property="articleIsComment" column="article_is_comment" />
+        <result property="articleStatus" column="article_status" />
+        <result property="articleOrder" column="article_order" />
+        <result property="articleUpdateTime" column="article_update_time" />
+        <result property="articleCreateTime" column="article_create_time" />
+        <result property="articleSummary" column="article_summary" />
+        <result property="articleThumbnail" column="article_thumbnail" />
+        <association property="user" javaType="com.ljw.blog.entity.User"
+                     select="com.ljw.blog.mapper.UserMapper.selectUserByUserId"
+                     column="article_user_id">
+        </association>
+        <collection property="categoryList" ofType="com.ljw.blog.entity.Category"
+                    select="com.ljw.blog.mapper.CategoryMapper.selectArticleCategoryList"
+                    column="article_id">
+        </collection>
+        <collection property="tagList" ofType="com.ljw.blog.entity.Tag"
+                    select="com.ljw.blog.mapper.TagMapper.selectArticleTags"
+                    column="article_id">
+        </collection>
+    </resultMap>
+    
+    <!--Note:注意这里的test与jsp中的不同，不用#{}直接取出值;#{}注释不能直接写道语句中-->
+    <select id="selectArticlesByCriteria" resultMap="articleWithUserWithCategory">
+        select a.*
+        from article a
+        <if test="similar!=null and articleId!=null">
+            inner join article_category_ref acr
+            on a.article_id = acr.article_id
+        </if>
+        <where>
+            <if test="status!=null">
+                AND article_status = #{status}
+            </if>
+            <if test="similar!=null and articleId!=null">
+                And acr.category_id
+                in (
+                    select acr_in.category_id
+                    from article a_in
+                    inner join article_category_ref acr_in
+                    where a_in.article_id = #{articleId}
+                )
+            </if>
+            <if test="keywords!=null">
+                And article_title like concat("%",#{keywords},"%")
+            </if>
+            <if test="userId!=null">
+                And article_user_id = #{userId}
+            </if>
+            <if test="articleId!=null">
+                And a.article_id = #{articleId}
+            </if>
+        </where>
+        <choose>
+            <when test="whetherComment!=null">
+                order by article_comment_count desc
+            </when>
+            <otherwise>
+                order by a.article_id desc
+            </otherwise>
+        </choose>
+        <if test="limit!=null">
+            limit #{limit}
+        </if>
+    </select>
+    
+    <!--Note:关联查询中非分步查询都需要使用连接查询-->
+    <!--Note:如果省略,则不封装该属性(不自动封装的原因是数据库列名与pojo的属性名不相同,开启了驼峰命名?),所以如果外层和内层的<id>都省略,则报错返回数过多-->
+    <resultMap id="articleWithComment" type="com.ljw.blog.entity.Article">
+        <id property="articleId" column="article_id" />
+        <result property="articleUserId" column="article_user_id" />
+        <result property="articleTitle" column="article_title" />
+        <result property="articleContent" column="article_content" />
+        <result property="articleViewCount" column="article_view_count" />
+        <result property="articleCommentCount" column="article_comment_count" />
+        <result property="articleLikeCount" column="article_like_count" />
+        <result property="articleIsComment" column="article_is_comment" />
+        <result property="articleStatus" column="article_status" />
+        <result property="articleOrder" column="article_order" />
+        <result property="articleUpdateTime" column="article_update_time" />
+        <result property="articleCreateTime" column="article_create_time" />
+        <result property="articleSummary" column="article_summary" />
+        <result property="articleThumbnail" column="article_thumbnail" />
+        <collection property="commentList" ofType="com.ljw.blog.entity.Comment">
+            <!--此处column是写起了别名的还是没有起别名的?-->
+            <id column="comment_id" property="commentId"/>
+            <result property="commentPid" column="comment_pid" />
+            <result property="commentPname" column="comment_pname" />
+            <result property="commentArticleId" column="comment_article_id" />
+            <result property="commentAuthorName" column="comment_author_name" />
+            <result property="commentAuthorEmail" column="comment_author_email" />
+            <result property="commentAuthorUrl" column="comment_author_url" />
+            <result property="commentAuthorAvatar" column="comment_author_avatar" />
+            <result property="commentContent" column="comment_content" />
+            <result property="commentAgent" column="comment_agent" />
+            <result property="commentIp" column="comment_ip" />
+            <result property="commentCreateTime" column="comment_create_time" />
+            <result property="commentRole" column="comment_role" />
+            <result property="commentUserId" column="comment_user_id" />
+        </collection>
+        <collection property="categoryList" ofType="com.ljw.blog.entity.Category">
+            <id column="category_id" property="categoryId"/>
+            <result property="categoryPid" column="category_pid" />
+            <result property="categoryName" column="category_name" />
+            <result property="categoryDescription" column="category_description" />
+            <result property="categoryOrder" column="category_order" />
+            <result property="categoryIcon" column="category_icon" />
+        </collection>
+    </resultMap>
+    
+    <select id="selectByPrimaryKeyWithCommentWithCategory" resultMap="articleWithComment">
+        select a.*,c.*,cg.*
+        from article a
+        left join comment c
+        on a.article_id = c.comment_article_id
+        left join article_category_ref acg
+        on a.article_id = acg.article_id
+        left join category cg
+        on acg.category_id = cg.category_id
+        where a.article_id = #{articleId}
+        ORDER BY comment_id ASC,category_id
+    </select>
+    
+    <select id="selectPreArticlePublish" resultType="com.ljw.blog.entity.Article">
+        select *
+        from article
+        where article_id &lt; #{articleId} AND article_status = 1
+        order by article_id DESC
+        limit 1
+    </select>
+    
+    <select id="selectAfterArticlePublish" resultType="com.ljw.blog.entity.Article">
+        select *
+        from article
+        where article_id > #{articleId} AND article_status = 1
+        order by article_id ASC
+        limit 1
+    </select>
+    
+    <update id="updateArticleCommentCount">
+        update article
+        set article_comment_count = (
+            select count(*)
+            from comment
+            where comment_article_id = #{articleId}
+            )
+        where article_id = #{articleId}
+    </update>
+    
+    <select id="countArticle" resultType="int">
+        select count(*)
+        from Article
+        <where>
+            <if test="status!=null">
+                and article_status = #{status}
+            </if>
+        </where>
+    </select>
+    
+    <select id="countViewByCriteria" resultType="int">
+        select sum(article_view_count)
+        from article
+        <where>
+            <if test="status!=null">
+                and article_status = #{status}
+            </if>
+        </where>
+    </select>
+    
+    <select id="getArticleLastUpdateTimeByCriteria" resultType="Date">
+        select article_update_time
+        from article
+        order by article_update_time desc
+        limit 1
+    </select>
+    
+    <!--Note:delete如果是多表删除需要在delete指明删除哪些表的信息-->
+    <delete id="deleteByPrimaryKeyAndRef">
+        delete a,acf,atf,c from
+        article a
+        inner join article_category_ref acf
+        on a.article_id = acf.article_id
+        inner join article_tag_ref atf
+        on a.article_id = atf.article_id
+        inner join comment c
+        on a.article_id = c.comment_article_id
+        where a.article_id = #{articleId}
+    </delete>
+
+</mapper>

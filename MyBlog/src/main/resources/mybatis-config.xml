@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+		PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	
+	<settings>
+		<!--开启懒加载-->
+		<setting name="lazyLoadingEnabled" value="true"/>
+		<!--开启懒加载的按需加载，只加载当前属性-->
+		<setting name="aggressiveLazyLoading" value="false"/>
+		<!--是否开启自动驼峰命名规则（camel case）映射，即从经典数据库列名 A_COLUMN 到经典
+            Java 属性名 aColumn 的类似映射。-->
+		<setting name="mapUnderscoreToCamelCase" value="true"/>
+		<!--不允许 JDBC 支持自动生成主键,见https://www.cnblogs.com/nuccch/p/9069644.html-->
+		<setting name="useGeneratedKeys" value="false"/>
+	</settings>
+	<!--起别名-->
+	<typeAliases>
+		<package name="com.ljw.blog.entity"/>
+	</typeAliases>
+	
+	<plugins>
+		<plugin interceptor="com.github.pagehelper.PageHelper">
+			<!--分页参数合理化  -->
+			<property name="reasonable" value="true"/>
+		</plugin>
+	</plugins>
+
+</configuration>

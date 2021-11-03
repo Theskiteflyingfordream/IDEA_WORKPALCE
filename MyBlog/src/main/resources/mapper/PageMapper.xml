@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ljw.blog.mapper.PageMapper">
+  <resultMap id="BaseResultMap" type="com.ljw.blog.entity.Page">
+    <id column="page_id" jdbcType="INTEGER" property="pageId" />
+    <result column="page_key" jdbcType="VARCHAR" property="pageKey" />
+    <result column="page_title" jdbcType="VARCHAR" property="pageTitle" />
+    <result column="page_create_time" jdbcType="TIMESTAMP" property="pageCreateTime" />
+    <result column="page_update_time" jdbcType="TIMESTAMP" property="pageUpdateTime" />
+    <result column="page_view_count" jdbcType="INTEGER" property="pageViewCount" />
+    <result column="page_comment_count" jdbcType="INTEGER" property="pageCommentCount" />
+    <result column="page_status" jdbcType="INTEGER" property="pageStatus" />
+    <result column="page_content" jdbcType="LONGVARCHAR" property="pageContent" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from page
+    where page_id = #{pageId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.ljw.blog.entity.Page">
+    insert into page (page_id, page_key, page_title, 
+      page_create_time, page_update_time, page_view_count, 
+      page_comment_count, page_status, page_content
+      )
+    values (#{pageId,jdbcType=INTEGER}, #{pageKey,jdbcType=VARCHAR}, #{pageTitle,jdbcType=VARCHAR}, 
+      #{pageCreateTime,jdbcType=TIMESTAMP}, #{pageUpdateTime,jdbcType=TIMESTAMP}, #{pageViewCount,jdbcType=INTEGER}, 
+      #{pageCommentCount,jdbcType=INTEGER}, #{pageStatus,jdbcType=INTEGER}, #{pageContent,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.ljw.blog.entity.Page">
+    update page
+    set page_key = #{pageKey,jdbcType=VARCHAR},
+      page_title = #{pageTitle,jdbcType=VARCHAR},
+      page_create_time = #{pageCreateTime,jdbcType=TIMESTAMP},
+      page_update_time = #{pageUpdateTime,jdbcType=TIMESTAMP},
+      page_view_count = #{pageViewCount,jdbcType=INTEGER},
+      page_comment_count = #{pageCommentCount,jdbcType=INTEGER},
+      page_status = #{pageStatus,jdbcType=INTEGER},
+      page_content = #{pageContent,jdbcType=LONGVARCHAR}
+    where page_id = #{pageId,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select page_id, page_key, page_title, page_create_time, page_update_time, page_view_count, 
+    page_comment_count, page_status, page_content
+    from page
+    where page_id = #{pageId,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select page_id, page_key, page_title, page_create_time, page_update_time, page_view_count, 
+    page_comment_count, page_status, page_content
+    from page
+  </select>
+</mapper>

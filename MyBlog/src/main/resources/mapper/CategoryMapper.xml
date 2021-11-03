@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ljw.blog.mapper.CategoryMapper">
+  <resultMap id="BaseResultMap" type="com.ljw.blog.entity.Category">
+    <id column="category_id" jdbcType="INTEGER" property="categoryId" />
+    <result column="category_pid" jdbcType="INTEGER" property="categoryPid" />
+    <result column="category_name" jdbcType="VARCHAR" property="categoryName" />
+    <result column="category_description" jdbcType="VARCHAR" property="categoryDescription" />
+    <result column="category_order" jdbcType="INTEGER" property="categoryOrder" />
+    <result column="category_icon" jdbcType="VARCHAR" property="categoryIcon" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from category
+    where category_id = #{categoryId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.ljw.blog.entity.Category">
+    insert into category (category_id, category_pid, category_name, 
+      category_description, category_order, category_icon
+      )
+    values (#{categoryId,jdbcType=INTEGER}, #{categoryPid,jdbcType=INTEGER}, #{categoryName,jdbcType=VARCHAR}, 
+      #{categoryDescription,jdbcType=VARCHAR}, #{categoryOrder,jdbcType=INTEGER}, #{categoryIcon,jdbcType=VARCHAR}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.ljw.blog.entity.Category">
+    update category
+    set category_pid = #{categoryPid,jdbcType=INTEGER},
+      category_name = #{categoryName,jdbcType=VARCHAR},
+      category_description = #{categoryDescription,jdbcType=VARCHAR},
+      category_order = #{categoryOrder,jdbcType=INTEGER},
+      category_icon = #{categoryIcon,jdbcType=VARCHAR}
+    where category_id = #{categoryId,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select category_id, category_pid, category_name, category_description, category_order, 
+    category_icon
+    from category
+    where category_id = #{categoryId,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select category_id, category_pid, category_name, category_description, category_order, 
+    category_icon
+    from category
+  </select>
+  
+    <resultMap id="categoryWithArticle" type="com.ljw.blog.entity.Category">
+        <id property="categoryId" column="category_id"></id>
+        <result property="categoryPid" column="category_pid"></result>
+        <result property="categoryName" column="category_name"></result>
+        <result property="categoryDescription" column="category_description"></result>
+        <result property="categoryOrder" column="category_order"></result>
+        <result property="categoryIcon" column="category_icon"></result>
+        <collection property="articleList" ofType="com.ljw.blog.entity.Article">
+            <id property="articleId" column="article_id" />
+            <result property="articleUserId" column="article_user_id" />
+            <result property="articleTitle" column="article_title" />
+            <result property="articleContent" column="article_content" />
+            <result property="articleViewCount" column="article_view_count" />
+            <result property="articleCommentCount" column="article_comment_count" />
+            <result property="articleLikeCount" column="article_like_count" />
+            <result property="articleIsComment" column="article_is_comment" />
+            <result property="articleStatus" column="article_status" />
+            <result property="articleOrder" column="article_order" />
+            <result property="articleUpdateTime" column="article_update_time" />
+            <result property="articleCreateTime" column="article_create_time" />
+            <result property="articleSummary" column="article_summary" />
+            <result property="articleThumbnail" column="article_thumbnail" />
+        </collection>
+    </resultMap>
+    <select id="selectCategoryWithArticle" resultMap="categoryWithArticle">
+        select *
+        from category c
+        inner join article_category_ref ac
+        on c.category_id = ac.category_id
+        inner join article a
+        on ac.article_id = a.article_id
+        where c.category_id = #{categoryId}
+    </select>
+    
+    <select id="selectCategoryList" resultType="com.ljw.blog.entity.Category">
+        select *
+        from category
+    </select>
+    
+    <select id="countCategory" resultType="int">
+        select count(*)
+        from category
+    </select>
+    
+    <select id="selectArticleCategoryList" resultType="com.ljw.blog.entity.Category">
+        select *
+        from category c
+        inner join article_category_ref acr
+        on c.category_id = acr.category_id
+        where acr.article_id = #{article_id}
+    </select>
+    
+</mapper>

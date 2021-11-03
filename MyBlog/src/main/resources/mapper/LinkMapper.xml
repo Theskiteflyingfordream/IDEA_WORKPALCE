@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ljw.blog.mapper.LinkMapper">
+  <resultMap id="BaseResultMap" type="com.ljw.blog.entity.Link">
+    <id column="link_id" jdbcType="INTEGER" property="linkId" />
+    <result column="link_url" jdbcType="VARCHAR" property="linkUrl" />
+    <result column="link_name" jdbcType="VARCHAR" property="linkName" />
+    <result column="link_image" jdbcType="VARCHAR" property="linkImage" />
+    <result column="link_description" jdbcType="VARCHAR" property="linkDescription" />
+    <result column="link_owner_nickname" jdbcType="VARCHAR" property="linkOwnerNickname" />
+    <result column="link_owner_contact" jdbcType="VARCHAR" property="linkOwnerContact" />
+    <result column="link_update_time" jdbcType="TIMESTAMP" property="linkUpdateTime" />
+    <result column="link_create_time" jdbcType="TIMESTAMP" property="linkCreateTime" />
+    <result column="link_order" jdbcType="INTEGER" property="linkOrder" />
+    <result column="link_status" jdbcType="INTEGER" property="linkStatus" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from link
+    where link_id = #{linkId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.ljw.blog.entity.Link">
+    insert into link (link_id, link_url, link_name, 
+      link_image, link_description, link_owner_nickname, 
+      link_owner_contact, link_update_time, link_create_time, 
+      link_order, link_status)
+    values (#{linkId,jdbcType=INTEGER}, #{linkUrl,jdbcType=VARCHAR}, #{linkName,jdbcType=VARCHAR}, 
+      #{linkImage,jdbcType=VARCHAR}, #{linkDescription,jdbcType=VARCHAR}, #{linkOwnerNickname,jdbcType=VARCHAR}, 
+      #{linkOwnerContact,jdbcType=VARCHAR}, #{linkUpdateTime,jdbcType=TIMESTAMP}, #{linkCreateTime,jdbcType=TIMESTAMP}, 
+      #{linkOrder,jdbcType=INTEGER}, #{linkStatus,jdbcType=INTEGER})
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.ljw.blog.entity.Link">
+    update link
+    set link_url = #{linkUrl,jdbcType=VARCHAR},
+      link_name = #{linkName,jdbcType=VARCHAR},
+      link_image = #{linkImage,jdbcType=VARCHAR},
+      link_description = #{linkDescription,jdbcType=VARCHAR},
+      link_owner_nickname = #{linkOwnerNickname,jdbcType=VARCHAR},
+      link_owner_contact = #{linkOwnerContact,jdbcType=VARCHAR},
+      link_update_time = #{linkUpdateTime,jdbcType=TIMESTAMP},
+      link_create_time = #{linkCreateTime,jdbcType=TIMESTAMP},
+      link_order = #{linkOrder,jdbcType=INTEGER},
+      link_status = #{linkStatus,jdbcType=INTEGER}
+    where link_id = #{linkId,jdbcType=INTEGER}
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select link_id, link_url, link_name, link_image, link_description, link_owner_nickname, 
+    link_owner_contact, link_update_time, link_create_time, link_order, link_status
+    from link
+    where link_id = #{linkId,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select link_id, link_url, link_name, link_image, link_description, link_owner_nickname, 
+    link_owner_contact, link_update_time, link_create_time, link_order, link_status
+    from link
+  </select>
+</mapper>

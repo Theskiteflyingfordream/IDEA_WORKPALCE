@@ -1,0 +1,52 @@
+<!DOCTYPE generatorConfiguration PUBLIC
+        "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+<generatorConfiguration>
+
+<!--注意targetProject以工程为基本路径，而不是模块-->
+<!--注意使用mbg逆向工程前清除缓存或者清除原来的所有逆向工程生成的文件，否则会出现重复-->
+    
+
+    <context id="simple" targetRuntime="MyBatis3Simple">
+
+        <commentGenerator>
+            <!-- 是否去除自动生成的注释 true：是 ： false:否 -->
+            <property name="suppressAllComments" value="true" />
+        </commentGenerator>
+
+        <jdbcConnection driverClass="com.mysql.cj.jdbc.Driver"
+                        connectionURL="jdbc:mysql://127.0.0.1:3306/forest_blog?useUnicode=true&amp;characterEncoding=utf8&amp;serverTimezone=UTC"
+                        userId="root"
+                        password="root"/>
+
+        <javaModelGenerator targetPackage="com.ljw.entity" targetProject="MyBlog/src/main/java">
+            <property name="enableSubPackages" value="false" />
+        </javaModelGenerator>
+
+        <sqlMapGenerator targetPackage="mapper" targetProject="MyBlog/src/main/resources">
+            <property name="enableSubPackages" value="false" />
+        </sqlMapGenerator>
+
+        <javaClientGenerator type="XMLMAPPER" targetPackage="com.ljw.mapper" targetProject="MyBlog/src/main/java">
+            <property name="enableSubPackages" value="false" />
+        </javaClientGenerator>
+
+        <!--指定数据库的表和entity关系-->
+        <table tableName="article" domainObjectName="Article" >
+            <!--注意如果数据库实体中属性包含有text类型的，逆向工程生成时会自动生成WithBLOBS.java存放该类型字段，mapper中返回值也会出现WithBLOBS.java而报错，因此需要指定如下-->
+            <columnOverride column="article_summary" javaType="java.lang.String" jdbcType="text" />
+        </table>
+        <table tableName="article_category_ref" domainObjectName="ArticleCategoryRef"></table>
+        <table tableName="article_tag_ref" domainObjectName="ArticleTagRef"></table>
+        <table tableName="category" domainObjectName="Category"></table>
+        <table tableName="comment" domainObjectName="Comment"></table>
+        <table tableName="link" domainObjectName="Link"></table>
+        <table tableName="menu" domainObjectName="Menu"></table>
+        <table tableName="notice" domainObjectName="Notice"></table>
+        <table tableName="options" domainObjectName="Options"></table>
+        <table tableName="page" domainObjectName="Page"></table>
+        <table tableName="tag" domainObjectName="Tag"></table>
+        <table tableName="user" domainObjectName="User"></table>
+    </context>
+
+</generatorConfiguration>

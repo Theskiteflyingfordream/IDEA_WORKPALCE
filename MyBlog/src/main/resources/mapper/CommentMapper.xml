@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ljw.blog.mapper.CommentMapper">
+  <resultMap id="BaseResultMap" type="com.ljw.blog.entity.Comment">
+    <id column="comment_id" jdbcType="INTEGER" property="commentId" />
+    <result column="comment_pid" jdbcType="INTEGER" property="commentPid" />
+    <result column="comment_pname" jdbcType="VARCHAR" property="commentPname" />
+    <result column="comment_article_id" jdbcType="INTEGER" property="commentArticleId" />
+    <result column="comment_author_name" jdbcType="VARCHAR" property="commentAuthorName" />
+    <result column="comment_author_email" jdbcType="VARCHAR" property="commentAuthorEmail" />
+    <result column="comment_author_url" jdbcType="VARCHAR" property="commentAuthorUrl" />
+    <result column="comment_author_avatar" jdbcType="VARCHAR" property="commentAuthorAvatar" />
+    <result column="comment_content" jdbcType="VARCHAR" property="commentContent" />
+    <result column="comment_agent" jdbcType="VARCHAR" property="commentAgent" />
+    <result column="comment_ip" jdbcType="VARCHAR" property="commentIp" />
+    <result column="comment_create_time" jdbcType="TIMESTAMP" property="commentCreateTime" />
+    <result column="comment_role" jdbcType="INTEGER" property="commentRole" />
+    <result column="comment_user_id" jdbcType="INTEGER" property="commentUserId" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from comment
+    where comment_id = #{commentId,jdbcType=INTEGER}
+    Or comment_pid = #{commentId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insertAutoId" parameterType="com.ljw.blog.entity.Comment" useGeneratedKeys="true" keyProperty="commentId">
+    insert into comment (comment_pid, comment_pname,
+      comment_article_id, comment_author_name, comment_author_email, 
+      comment_author_url, comment_author_avatar, 
+      comment_content, comment_agent, comment_ip, 
+      comment_create_time, comment_role, comment_user_id
+      )
+    values (#{commentPid,jdbcType=INTEGER}, #{commentPname,jdbcType=VARCHAR},
+      #{commentArticleId,jdbcType=INTEGER}, #{commentAuthorName,jdbcType=VARCHAR}, #{commentAuthorEmail,jdbcType=VARCHAR}, 
+      #{commentAuthorUrl,jdbcType=VARCHAR}, #{commentAuthorAvatar,jdbcType=VARCHAR}, 
+      #{commentContent,jdbcType=VARCHAR}, #{commentAgent,jdbcType=VARCHAR}, #{commentIp,jdbcType=VARCHAR}, 
+      #{commentCreateTime,jdbcType=TIMESTAMP}, #{commentRole,jdbcType=INTEGER}, #{commentUserId,jdbcType=INTEGER}
+      )
+  </insert>
+  
+  <update id="updateByPrimaryKey" parameterType="com.ljw.blog.entity.Comment">
+    update comment
+    <set>
+        <if test="commentContent!=null">
+            comment_content = #{commentContent},
+        </if>
+    </set>
+    where comment_id = #{commentId}
+  </update>
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select comment_id, comment_pid, comment_pname, comment_article_id, comment_author_name, 
+    comment_author_email, comment_author_url, comment_author_avatar, comment_content, 
+    comment_agent, comment_ip, comment_create_time, comment_role, comment_user_id
+    from comment
+    where comment_id = #{commentId,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select comment_id, comment_pid, comment_pname, comment_article_id, comment_author_name, 
+    comment_author_email, comment_author_url, comment_author_avatar, comment_content, 
+    comment_agent, comment_ip, comment_create_time, comment_role, comment_user_id
+    from comment
+  </select>
+  <select id="countComment" resultType="int">
+    select count(*)
+    from comment
+  </select>
+  <select id="getLatestTenComment" resultType="com.ljw.blog.entity.Comment">
+      select *
+      from comment
+      order by comment_create_time desc
+      limit 10
+  </select>
+  
+  
+  <resultMap id="resultWithArticleLazyload" type="com.ljw.blog.entity.Comment">
+    <id column="comment_id" jdbcType="INTEGER" property="commentId" />
+    <result column="comment_pid" jdbcType="INTEGER" property="commentPid" />
+    <result column="comment_pname" jdbcType="VARCHAR" property="commentPname" />
+    <result column="comment_article_id" jdbcType="INTEGER" property="commentArticleId" />
+    <result column="comment_author_name" jdbcType="VARCHAR" property="commentAuthorName" />
+    <result column="comment_author_email" jdbcType="VARCHAR" property="commentAuthorEmail" />
+    <result column="comment_author_url" jdbcType="VARCHAR" property="commentAuthorUrl" />
+    <result column="comment_author_avatar" jdbcType="VARCHAR" property="commentAuthorAvatar" />
+    <result column="comment_content" jdbcType="VARCHAR" property="commentContent" />
+    <result column="comment_agent" jdbcType="VARCHAR" property="commentAgent" />
+    <result column="comment_ip" jdbcType="VARCHAR" property="commentIp" />
+    <result column="comment_create_time" jdbcType="TIMESTAMP" property="commentCreateTime" />
+    <result column="comment_role" jdbcType="INTEGER" property="commentRole" />
+    <result column="comment_user_id" jdbcType="INTEGER" property="commentUserId" />
+      <!--一对一分步查询-->
+      <!--Note:fetchType为局部懒加载设置-->
+      <association property="article" javaType="com.ljw.blog.entity.Article" fetchType="lazy"
+        select="com.ljw.blog.mapper.ArticleMapper.selectByPrimaryKey"
+        column="comment_article_id"
+      />
+      <association property="user" javaType="com.ljw.blog.entity.User"
+        select="com.ljw.blog.mapper.UserMapper.selectUserByUserId"
+        column="comment_user_id"/>
+  </resultMap>
+  <select id="selectCommentsByCriteria" resultMap="resultWithArticleLazyload">
+      select *
+      from comment
+      <where>
+          <if test="userId!=null">
+              comment_user_id = #{userId}
+          </if>
+      </where>
+      order by comment_id desc
+      <if test="limit!=null">
+          limit #{limit}
+      </if>
+  </select>
+  
+  
+</mapper>

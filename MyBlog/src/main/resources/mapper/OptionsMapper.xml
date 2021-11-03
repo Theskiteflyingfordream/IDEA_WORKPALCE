@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ljw.blog.mapper.OptionsMapper">
+  <resultMap id="BaseResultMap" type="com.ljw.blog.entity.Options">
+    <id column="option_id" jdbcType="INTEGER" property="optionId" />
+    <result column="option_site_title" jdbcType="VARCHAR" property="optionSiteTitle" />
+    <result column="option_site_descrption" jdbcType="VARCHAR" property="optionSiteDescrption" />
+    <result column="option_meta_descrption" jdbcType="VARCHAR" property="optionMetaDescrption" />
+    <result column="option_meta_keyword" jdbcType="VARCHAR" property="optionMetaKeyword" />
+    <result column="option_aboutsite_avatar" jdbcType="VARCHAR" property="optionAboutsiteAvatar" />
+    <result column="option_aboutsite_title" jdbcType="VARCHAR" property="optionAboutsiteTitle" />
+    <result column="option_aboutsite_content" jdbcType="VARCHAR" property="optionAboutsiteContent" />
+    <result column="option_aboutsite_wechat" jdbcType="VARCHAR" property="optionAboutsiteWechat" />
+    <result column="option_aboutsite_qq" jdbcType="VARCHAR" property="optionAboutsiteQq" />
+    <result column="option_aboutsite_github" jdbcType="VARCHAR" property="optionAboutsiteGithub" />
+    <result column="option_aboutsite_weibo" jdbcType="VARCHAR" property="optionAboutsiteWeibo" />
+    <result column="option_tongji" jdbcType="VARCHAR" property="optionTongji" />
+    <result column="option_status" jdbcType="INTEGER" property="optionStatus" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from options
+    where option_id = #{optionId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.ljw.blog.entity.Options">
+    insert into options (option_id, option_site_title, option_site_descrption, 
+      option_meta_descrption, option_meta_keyword, 
+      option_aboutsite_avatar, option_aboutsite_title, 
+      option_aboutsite_content, option_aboutsite_wechat, 
+      option_aboutsite_qq, option_aboutsite_github, 
+      option_aboutsite_weibo, option_tongji, option_status
+      )
+    values (#{optionId,jdbcType=INTEGER}, #{optionSiteTitle,jdbcType=VARCHAR}, #{optionSiteDescrption,jdbcType=VARCHAR}, 
+      #{optionMetaDescrption,jdbcType=VARCHAR}, #{optionMetaKeyword,jdbcType=VARCHAR}, 
+      #{optionAboutsiteAvatar,jdbcType=VARCHAR}, #{optionAboutsiteTitle,jdbcType=VARCHAR}, 
+      #{optionAboutsiteContent,jdbcType=VARCHAR}, #{optionAboutsiteWechat,jdbcType=VARCHAR}, 
+      #{optionAboutsiteQq,jdbcType=VARCHAR}, #{optionAboutsiteGithub,jdbcType=VARCHAR}, 
+      #{optionAboutsiteWeibo,jdbcType=VARCHAR}, #{optionTongji,jdbcType=VARCHAR}, #{optionStatus,jdbcType=INTEGER}
+      )
+  </insert>
+  <!--待解决-->
+  <update id="updateByPrimaryKey" parameterType="com.ljw.blog.entity.Options">
+    update options
+    <set>
+        <if test="optionSiteTitle!=null">
+            option_site_title = #{optionSiteTitle},
+        </if>
+
+    </set>
+        where option_id = optionId
+  </update>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select option_id, option_site_title, option_site_descrption, option_meta_descrption, 
+    option_meta_keyword, option_aboutsite_avatar, option_aboutsite_title, option_aboutsite_content, 
+    option_aboutsite_wechat, option_aboutsite_qq, option_aboutsite_github, option_aboutsite_weibo, 
+    option_tongji, option_status
+    from options
+    where option_id = #{optionId,jdbcType=INTEGER}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap">
+    select option_id, option_site_title, option_site_descrption, option_meta_descrption, 
+    option_meta_keyword, option_aboutsite_avatar, option_aboutsite_title, option_aboutsite_content, 
+    option_aboutsite_wechat, option_aboutsite_qq, option_aboutsite_github, option_aboutsite_weibo, 
+    option_tongji, option_status
+    from options
+  </select>
+</mapper>
